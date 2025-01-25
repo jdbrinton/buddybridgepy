@@ -1,6 +1,6 @@
-# ftob
+# BuddyBridge
 
-A Python script to find Facebook friends on Bluesky using Selenium and ChromeDriver.
+A Python webserver to find Facebook friends on Bluesky using Selenium and ChromeDriver.
 
 ## Requirements
 
