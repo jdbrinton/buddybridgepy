@@ -9,6 +9,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+DEBUG = False
+
 CMD_FB_EMAIL = ""
 CMD_FB_PASS = ""
 CMD_BS_USER = ""
@@ -101,7 +103,12 @@ def process():
     bs_password = request.form.get("bs_password")
     friends_data = get_facebook_friends(fb_email, fb_password)
     matches = find_bluesky_matches(bs_username, bs_password, friends_data)
-    
+
+    placeholder_svg = '<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="none" data-testid="userAvatarFallback"><circle cx="12" cy="12" r="12" fill="#0070ff"></circle><circle cx="12" cy="9.5" r="3.5" fill="#fff"></circle><path stroke-linecap="round" stroke-linejoin="round" fill="#fff" d="M 12.058 22.784 C 9.422 22.784 7.007 21.836 5.137 20.262 C 5.667 17.988 8.534 16.25 11.99 16.25 C 15.494 16.25 18.391 18.036 18.864 20.357 C 17.01 21.874 14.64 22.784 12.058 22.784 Z"></path></svg>'
+
+    def render_image_or_placeholder(src):
+        return f'<img src="{src}" alt="Photo">' if src else placeholder_svg
+
     out = f"""
 <html>
 <head>
@@ -142,8 +149,8 @@ def process():
     }}
     img {{
         border-radius: 50%;
-        height: 50px;
-        width: 50px;
+        height: 80px;
+        width: 80px;
     }}
     .profile-link {{
         color: #007BFF;
@@ -184,17 +191,17 @@ def process():
         </thead>
         <tbody>
     """
-    
+
     for fn, fp, bs_name, bs_photo, already_followed, profile_url in matches["photo_matches"]:
         if already_followed:
             out += f"""
             <tr>
                 <td>
-                    <img src="{fp}" alt="Facebook Photo"><br>{fn}
+                    {render_image_or_placeholder(fp)}<br>{fn}
                 </td>
                 <td>
                     <div>
-                        <img src="{bs_photo}" alt="BlueSky Photo"><br>{bs_name}<br>
+                        {render_image_or_placeholder(bs_photo)}<br>{bs_name}<br>
                         <a href="{profile_url}" target="_blank" class="profile-link">Open Profile</a>
                     </div>
                 </td>
@@ -214,17 +221,17 @@ def process():
         </thead>
         <tbody>
     """
-    
+
     for fn, fp, bs_name, bs_photo, already_followed, profile_url in matches["photo_matches"]:
         if not already_followed:
             out += f"""
             <tr>
                 <td>
-                    <img src="{fp}" alt="Facebook Photo"><br>{fn}
+                    {render_image_or_placeholder(fp)}<br>{fn}
                 </td>
                 <td>
                     <div>
-                        <img src="{bs_photo}" alt="BlueSky Photo"><br>{bs_name}<br>
+                        {render_image_or_placeholder(bs_photo)}<br>{bs_name}<br>
                         <a href="{profile_url}" target="_blank" class="profile-link">Open Profile</a>
                     </div>
                 </td>
@@ -244,12 +251,12 @@ def process():
         </thead>
         <tbody>
     """
-    
+
     for fn, fp, alt_list in matches["name_only"]:
         alt_html = "".join([
             f"""
             <div>
-                <img src="{pmp}" alt="Match Photo"><br>{pmn}<br>
+                {render_image_or_placeholder(pmp)}<br>{pmn}<br>
                 <a href="{profile_url}" target="_blank" class="profile-link">Open Profile</a>
             </div>
             """
@@ -258,7 +265,7 @@ def process():
         out += f"""
         <tr>
             <td>
-                <img src="{fp}" alt="Facebook Photo"><br>{fn}
+                {render_image_or_placeholder(fp)}<br>{fn}
             </td>
             <td>{alt_html}</td>
         </tr>
@@ -271,6 +278,7 @@ def process():
 </html>
 """
     return out
+
 
 def create_driver():
     o = Options()
@@ -294,11 +302,15 @@ def get_facebook_friends(email, password):
         d.find_element(By.NAME, "login").click()
     except Exception as e:
         log("FB login error: " + str(e))
+        d.quit()
+        return []
+
     try:
         WebDriverWait(d, 10).until(EC.title_contains("Facebook"))
         time.sleep(5)
     except:
         pass
+
     d.get("https://www.facebook.com/friends/list")
     time.sleep(5)
     try:
@@ -306,6 +318,9 @@ def get_facebook_friends(email, password):
         time.sleep(5)
     except:
         log("FB friends body not found.")
+        d.quit()
+        return []
+
     try:
         t = d.find_element(By.TAG_NAME, "title").get_attribute("innerHTML")
         if "Page Not Found" in t:
@@ -314,20 +329,22 @@ def get_facebook_friends(email, password):
             return []
     except:
         pass
+
     friends = []
     seen = set()
-    scrolls = 0
     try:
         container = d.find_element(By.CSS_SELECTOR, "div.x135pmgq")
     except:
         log("Cannot find friends container")
         d.quit()
         return []
-        # container = d.find_element(By.TAG_NAME, "body")
-    while scrolls < 2:
+
+    while True:
         scrollable_container = d.find_element(By.CSS_SELECTOR, "div.xb57i2i.x1q594ok.x5lxg6s.x78zum5.xdt5ytf.x6ikm8r.x1ja2u2z.x1pq812k.x1rohswg.xfk6m8.x1yqm8si.xjx87ck.x1l7klhg.x1iyjqo2.xs83m0k.x2lwn1j.xx8ngbg.xwo3gff.x1oyok0e.x1odjw0f.x1e4zzel.x1n2onr6.xq1qtft")
         cards = container.find_elements(By.XPATH, ".//a[contains(@href,'facebook.com/') and (contains(@class,'x1i10hfl') or contains(@class,'x78zum5'))]")
         log("found cards: " + str(len(cards)))
+        
+        new_friends = 0
         for c in cards:
             if c not in seen:
                 seen.add(c)
@@ -352,11 +369,20 @@ def get_facebook_friends(email, password):
                 except Exception as e:
                     log("Error reading friend card: " + str(e))
                 friends.append((name, img_src))
+                new_friends += 1
+
+        if new_friends == 0:
+            break
+
+        if DEBUG and new_friends > 30:
+            break
+
         d.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight;", scrollable_container)
-        time.sleep(5)
-        scrolls += 1
+        time.sleep(1)
+
     d.quit()
     return friends
+
 
 def find_bluesky_matches(username, password, friends_data):
     d = create_driver()
@@ -381,22 +407,23 @@ def find_bluesky_matches(username, password, friends_data):
         log("bsky login error: " + str(e))
     pm = []
     no = []
+
     for idx, (fname, fphoto) in enumerate(friends_data):
-        if idx >= 10:
+        if DEBUG and idx >= 10:
             break
         q = fname.strip().replace(" ", "%20")
         log( "looking for " + fname)
         d.get(f"https://bsky.app/search?q={q}")
-        time.sleep(2)
         try:
             people_tab = WebDriverWait(d, 5).until(EC.element_to_be_clickable((By.XPATH, "//div[@role='tab' and contains(.,'People')]")))
+            time.sleep(1)
             d.execute_script("arguments[0].click();", people_tab)
         except:
             log("Could not click People tab for " + fname)
             pass
         try:
             WebDriverWait(d, 5).until(EC.presence_of_all_elements_located((By.XPATH, "//div[@class='css-175oi2r r-sa2ff0']//a[contains(@href,'/profile/') and @role='link']")))
-            time.sleep(2)
+            time.sleep(1)
         except:
             pass
         cards = d.find_elements(By.XPATH, "//div[@id='root']//div[contains(@class, 'css-175oi2r') and contains(@class, 'r-13awgt0')]//div/div/div[2]/div/div[position() >= 2]/a[@role='link' and contains(@href, '/profile/')]")
