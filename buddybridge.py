@@ -134,7 +134,7 @@ def process():
         background: #ffffff;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
-        border: 1px solid #ddd;
+        border: 3px solid #ddd;
     }}
     th, td {{
         padding: 12px;
@@ -259,6 +259,7 @@ def process():
                 {render_image_or_placeholder(pmp)}<br>{pmn}<br>
                 <a href="{profile_url}" target="_blank" class="profile-link">Open Profile</a>
             </div>
+            <br>
             """
             for pmn, pmp, already_followed, profile_url in alt_list
         ])

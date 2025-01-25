@@ -19,7 +19,7 @@ A Python webserver to find Facebook friends on Bluesky using Selenium and Chrome
 ```pip install -r requirements.txt```
 
 
-3. Download ChromeDriver from [https://sites.google.com/chromium.org/driver/](https://sites.google.com/chromium.org/driver/) and ensure it's in your system's PATH.
+3. Download ChromeDriver from [https://googlechromelabs.github.io/chrome-for-testing/](https://googlechromelabs.github.io/chrome-for-testing/) and ensure it's in your system's PATH.
 
 ## Usage
 
