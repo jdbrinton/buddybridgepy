@@ -12,7 +12,7 @@ A Python webserver to find Facebook friends on Bluesky using Selenium and Chrome
 
 1. Clone the repository:
 
-```git clone https://github.com/jdbrinton/ftob.git cd ftob```
+```git clone https://github.com/jdbrinton/buddybridge.git && cd buddybridge```
 
 2. Install the required Python packages:
 
@@ -25,7 +25,7 @@ A Python webserver to find Facebook friends on Bluesky using Selenium and Chrome
 
 Run the script:
 
-```python ftob.py```
+```python buddybridge.py```
 
 Follow the on-screen instructions to find your Facebook friends on Bluesky.
 
