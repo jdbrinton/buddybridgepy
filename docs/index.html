@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuddyBridge - Find Your Friends</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background-color: #0073e6;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1, h2, h3 {
+            color: #0073e6;
+        }
+        pre {
+            background: #f7f7f7;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #777;
+        }
+        a {
+            color: #0073e6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BuddyBridge</h1>
+        <p>Find your Facebook friends on BlueSky!</p>
+    </header>
+    <main>
+        <h2>Getting Started</h2>
+        <p><strong>BuddyBridge</strong> is a Python webserver that helps you find Facebook friends on BlueSky using Selenium and ChromeDriver. Follow the steps below to install and run the application locally for security reasons.</p>
+
+        <h3>Installation Guide</h3>
+        <ol>
+            <li>Clone the repository to your local machine:</li>
+            <pre><code>git clone https://github.com/jdbrinton/buddybridge.git && cd buddybridge</code></pre>
+            <li>Install the required Python packages:</li>
+            <pre><code>pip install -r requirements.txt</code></pre>
+            <li>Download ChromeDriver from <a href="https://sites.google.com/chromium.org/driver/" target="_blank">here</a> and ensure it's in your system's PATH.</li>
+        </ol>
+
+        <h3>Usage</h3>
+        <ol>
+            <li>Run the script using the command:</li>
+            <pre><code>python buddybridge.py</code></pre>
+            <li>Follow the on-screen instructions to find your Facebook friends on BlueSky.</li>
+        </ol>
+
+        <h3>GitHub Repository</h3>
+        <p>For more details, visit the BuddyBridge GitHub repository: <a href="https://github.com/jdbrinton/buddybridge" target="_blank">https://github.com/jdbrinton/buddybridge</a></p>
+
+        <h3>License</h3>
+        <p>This project is licensed under the MIT License.</p>
+    </main>
+    <footer>
+        <p>Created by <a href="https://github.com/jdbrinton" target="_blank">jdbrinton</a>. All rights reserved.</p>
+    </footer>
+</body>
+</html>
