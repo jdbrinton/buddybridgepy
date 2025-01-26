@@ -1,0 +1,7 @@
+version: 1.0.0
+releaseDate: '2025-01-26T07:15:38.000Z'
+path: buddybridge-setup-1.0.0.exe
+releaseNotes: >
+  Initial release of BuddyBridge!
+files:
+  - url: buddybridge-setup-1.0.0.exe
